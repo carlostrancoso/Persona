@@ -98,7 +98,7 @@ mat.color = new THREE.Color(0xffffff)
 mat.ior = 1.1
 mat.thickness = 5.0
 
-objLoader.load('lupa.obj', function (obj) {
+objLoader.load('LUPA.obj', function (obj) {
         obj.traverse(function (child) {
 
             if (child instanceof THREE.Mesh) {
@@ -115,14 +115,14 @@ objLoader.load('lupa.obj', function (obj) {
     var busto;
   {
     var mtlLoader = new MTLLoader();
-    mtlLoader.load('busto.mtl', (mtl) => {
+    mtlLoader.load('BUSTO.mtl', (mtl) => {
       mtl.preload();
       for (var material of Object.values(mtl.materials)) {
      material.side = THREE.DoubleSide;
       }
       var objLoader = new OBJLoader();
       objLoader.setMaterials(mtl);
-      objLoader.load('busto.obj', (mesh) => {
+      objLoader.load('BUSTO.obj', (mesh) => {
         busto = mesh;
         scene.add(busto);
         busto.rotation.y = Math.PI;
