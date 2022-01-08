@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Persona</title>
+  <style>
+    html, body {
+        margin: 0;
+        height: 100%;
+    }
+    #c {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+  </style>
+  <script type="module">
+    import * as THREE from 'https://threejs.org/build/three.module.js';
+    import {OrbitControls} from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+    import {OBJLoader} from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js';
+    import {MTLLoader} from 'https://threejs.org/examples/jsm/loaders/MTLLoader.js';
+
+
+  
+
+  var canvas = document.querySelector('#c');
+  var renderer = new THREE.WebGLRenderer({canvas});
+
+  var fov = 25;
+  var aspect = 2;  // the canvas default
+  var near = 1;
+  var far = 21;
+  var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+  camera.position.set(0, 10, 20);
+
+  var controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;  
+  controls.target.set(0, 2, 0);
+  controls.update();
+  controls.enableZoom = false;
+
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color('black');
+  //scene.fog = new THREE.Fog('white', 0.1, 5);
+
+
+  {
+    var skyColor = 0xB1E1FF;  // light blue
+    var groundColor = 0xB97A20;  // brownish orange
+    var intensity = 0.2;
+    var light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+    scene.add(light);
+  }
+
+  {
+    //luz vermelha
+    var color = 0xE7071B;
+    var intensity = 2;
+    var light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(5, 10, 2);
+    scene.add(light);
+    scene.add(light.target);
+  }
+
+  { 
+    //luz azul
+    var color = 0x0000FF;
+    var intensity = 2;
+    var light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-5, -10, 2);
+    scene.add(light);
+    scene.add(light.target);
+  }
+
+  { 
+    //luz verde
+    var color = 0x00FF00;
+    var intensity = 2;
+    var light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-10, 5, 2);
+    scene.add(light);
+    scene.add(light.target);
+  }
+var lupa;
+  {
+    var objLoader = new OBJLoader();
+    var mat = new THREE.MeshPhysicalMaterial({});
+mat.reflectivity = 0
+mat.transmission = 1.0
+mat.roughness = 0.2
+mat.metalness = 0
+mat.clearcoat = 0.3
+mat.clearcoatRoughness = 0.25
+mat.color = new THREE.Color(0xffffff)
+mat.ior = 1.1
+mat.thickness = 5.0
+
+objLoader.load('lupa.obj', function (obj) {
+        obj.traverse(function (child) {
+
+            if (child instanceof THREE.Mesh) {
+                child.material = mat;
+                mat.side = THREE.DoubleSide;
+            }
+
+        });
+        lupa = obj;
+        scene.add(lupa);
+      lupa.rotation.y = Math.PI;
+    });
+    }
+    var busto;
+  {
+    var mtlLoader = new MTLLoader();
+    mtlLoader.load('busto.mtl', (mtl) => {
+      mtl.preload();
+      for (var material of Object.values(mtl.materials)) {
+     material.side = THREE.DoubleSide;
+      }
+      var objLoader = new OBJLoader();
+      objLoader.setMaterials(mtl);
+      objLoader.load('busto.obj', (mesh) => {
+        busto = mesh;
+        scene.add(busto);
+        busto.rotation.y = Math.PI;
+      });
+    });
+    
+  }
+
+  function resizeRendererToDisplaySize(renderer) {
+    var canvas = renderer.domElement;
+    var width = canvas.clientWidth;
+    var height = canvas.clientHeight;
+    var needResize = canvas.width !== width || canvas.height !== height;
+    if (needResize) {
+      renderer.setSize(width, height, false);
+    }
+    return needResize;
+  }
+
+ function animate() {
+    requestAnimationFrame(animate);
+    
+    lupa.rotation.y -= 0.001;
+    busto.rotation.y += 0.0005;
+    renderer.render(scene, camera);
+
+    if (resizeRendererToDisplaySize(renderer)) {
+      var canvas = renderer.domElement;
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+    }
+    controls.update();
+    
+};
+
+animate();
+
+
+    </script>
+</head>
+
+<body>
+  <canvas id="c"></canvas>
+</body>
+
+</html>
