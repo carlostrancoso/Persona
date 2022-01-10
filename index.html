@@ -30,8 +30,8 @@
 
   var fov = 25;
   var aspect = 2;  // the canvas default
-  var near = 1;
-  var far = 100;
+  var near = 0.1;
+  var far = 50;
   var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.set(0, 10, 20);
 
@@ -39,18 +39,22 @@
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;  
   controls.target.set(0, 2, 0);
-  controls.update();
   controls.enableZoom = false;
+  controls.enablePan = false;
 
-  var scene = new THREE.Scene();
-  scene.background = new THREE.Color('black');
-  //scene.fog = new THREE.Fog('white', 0.1, 5);
+  const bgcolor = new THREE.Color(0xEDEDED);
+  const scene = new THREE.Scene();
+  scene.background = bgcolor;
 
+
+  {
+  scene.fog = new THREE.Fog(bgcolor, 20, 21.5);
+  }
 
   {
     var skyColor = 0xB1E1FF;  // light blue
     var groundColor = 0xB97A20;  // brownish orange
-    var intensity = 0.2;
+    var intensity = 0.4;
     var light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
     scene.add(light);
   }
@@ -58,9 +62,9 @@
   {
     //luz vermelha
     var color = 0xE7071B;
-    var intensity = 2;
+    var intensity = 4;
     var light = new THREE.DirectionalLight(color, intensity);
-    light.position.set(5, 10, 2);
+    light.position.set(5, 10, 10);
     scene.add(light);
     scene.add(light.target);
   }
@@ -68,9 +72,9 @@
   { 
     //luz azul
     var color = 0x0000FF;
-    var intensity = 2;
+    var intensity = 3;
     var light = new THREE.DirectionalLight(color, intensity);
-    light.position.set(-5, -10, 2);
+    light.position.set(10, 12, 2);
     scene.add(light);
     scene.add(light.target);
   }
@@ -84,19 +88,21 @@
     scene.add(light);
     scene.add(light.target);
   }
+
+  //lupa
 var lupa;
   {
     var objLoader = new OBJLoader();
     var mat = new THREE.MeshPhysicalMaterial({});
 mat.reflectivity = 0
-mat.transmission = 1.0
+mat.transmission = 1
 mat.roughness = 0.2
 mat.metalness = 0
 mat.clearcoat = 0.3
 mat.clearcoatRoughness = 0.25
 mat.color = new THREE.Color(0xffffff)
-mat.ior = 1.1
-mat.thickness = 5.0
+mat.ior = 1.2
+mat.thickness = 5
 
 objLoader.load('LUPA.obj', function (obj) {
         obj.traverse(function (child) {
@@ -112,6 +118,8 @@ objLoader.load('LUPA.obj', function (obj) {
       lupa.rotation.y = Math.PI;
     });
     }
+
+    //busto
     var busto;
   {
     var mtlLoader = new MTLLoader();
@@ -130,6 +138,22 @@ objLoader.load('LUPA.obj', function (obj) {
     });
     
   }
+  
+
+  //scroll
+
+  var scrollCount = 0;
+window.addEventListener('mousewheel', function(e){
+
+  if(e.wheelDelta<0 && scrollCount<100){
+    scrollCount+=5;
+  }
+
+  else if(e.wheelDelta>0 && scrollCount>-100){
+    scrollCount-=5;
+  }
+  console.log(window.addEventListener('mousewheel'));
+});
 
   function resizeRendererToDisplaySize(renderer) {
     var canvas = renderer.domElement;
@@ -145,8 +169,8 @@ objLoader.load('LUPA.obj', function (obj) {
  function animate() {
     requestAnimationFrame(animate);
     
-    lupa.rotation.y -= 0.001;
-    busto.rotation.y += 0.0005;
+    lupa.rotation.y -= (0.001 * scrollCount);
+    busto.rotation.y += 0.002;
     renderer.render(scene, camera);
 
     if (resizeRendererToDisplaySize(renderer)) {
