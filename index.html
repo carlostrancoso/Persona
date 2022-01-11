@@ -27,7 +27,8 @@
   
 
   var canvas = document.querySelector('#c');
-  var renderer = new THREE.WebGLRenderer({canvas});
+  var renderer = new THREE.WebGLRenderer({canvas, alpha:true});
+  renderer.setClearColor( 0xEDEDED, 0 );
 
   var fov = 25;
   var aspect = 2;  // the canvas default
@@ -51,6 +52,8 @@
   {
   scene.fog = new THREE.Fog(bgcolor, 20, 21.5);
   }
+
+  
 
   {
     var skyColor = 0xB1E1FF;  // light blue
@@ -147,32 +150,14 @@ objLoader.load('LUPA.obj', function (obj) {
 window.addEventListener('mousewheel', function(e){
 
   if(e.wheelDelta<0 && scrollCount<100){
-    scrollCount+=5;
+    scrollCount+=2;
   }
 
   else if(e.wheelDelta>0 && scrollCount>-100){
-    scrollCount-=5;
+    scrollCount-=2;
   }
-  console.log(window.addEventListener('mousewheel'));
+
 });
-
-//acelerometro
-
-if (window.DeviceOrientationEvent) {
-    window.addEventListener("deviceorientation", function(event) {
-        // alpha: rotation around z-axis
-        var rotateDegrees = event.alpha;
-        // gamma: left to right
-        var leftToRight = event.gamma;
-        // beta: front back motion
-        var frontToBack = event.beta;
-
-        handleOrientationEvent(frontToBack, leftToRight, rotateDegrees);
-    }, true);
-}
-
-
-
 
 //responsivo
 
@@ -195,12 +180,7 @@ if (window.DeviceOrientationEvent) {
     lupa.rotation.y -= (0.001 * scrollCount);
     busto.rotation.y += 0.002;
 
-    var handleOrientationEvent = function(frontToBack, leftToRight, rotateDegrees) {
-    // do something amazing
-    busto.rotation.y += 0.002 * leftToRight;
-    busto.rotation.z += 0.002 * frontToBack;
-    busto.rotation.x += 0.002 * rotateDegree;
-}
+    
     renderer.render(scene, camera);
 
     if (resizeRendererToDisplaySize(renderer)) {
