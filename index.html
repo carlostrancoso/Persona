@@ -155,6 +155,26 @@ window.addEventListener('mousewheel', function(e){
   console.log(window.addEventListener('mousewheel'));
 });
 
+//acelerometro
+
+if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", function(event) {
+        // alpha: rotation around z-axis
+        var rotateDegrees = event.alpha;
+        // gamma: left to right
+        var leftToRight = event.gamma;
+        // beta: front back motion
+        var frontToBack = event.beta;
+
+        handleOrientationEvent(frontToBack, leftToRight, rotateDegrees);
+    }, true);
+}
+
+
+
+
+//responsivo
+
   function resizeRendererToDisplaySize(renderer) {
     var canvas = renderer.domElement;
     var width = canvas.clientWidth;
@@ -166,11 +186,20 @@ window.addEventListener('mousewheel', function(e){
     return needResize;
   }
 
+
+  //funcao de animacao
  function animate() {
     requestAnimationFrame(animate);
     
     lupa.rotation.y -= (0.001 * scrollCount);
     busto.rotation.y += 0.002;
+
+    var handleOrientationEvent = function(frontToBack, leftToRight, rotateDegrees) {
+    // do something amazing
+    busto.rotation.y += 0.002 * leftToRight;
+    busto.rotation.z += 0.002 * frontToBack;
+    busto.rotation.x += 0.002 * rotateDegree;
+}
     renderer.render(scene, camera);
 
     if (resizeRendererToDisplaySize(renderer)) {
