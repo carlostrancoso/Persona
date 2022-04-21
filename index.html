@@ -18,49 +18,7 @@
     }
     #c:active {
     cursor: grabbing;
-}
-.icon-scroll,
-.icon-scroll:before {
-  position: absolute;
-    left: 50%;
-    top: -50%;
-}
-.icon-scroll {
-  width: 15px;
-  
-} 
 
-    .icon-scroll {
-        position: relative;
-    
-}
-.icon-scroll:before {
-    content: '';
-    width: 10px;
-    height: 10px;
-    background: white;
-    margin-left: -10px;
-    top: 20px;
-    border-radius: 5px;
-    animation-duration: 2.5s;
-    animation-iteration-count: infinite;
-    animation-name: scroll
-}
-@keyframes scroll {
-    0% {
-        opacity: 0;
-    }
-    5% {
-        opacity: 0;
-    }
-    20% {
-        opacity: 1;
-    }
-  
-    100% {
-        opacity: 0;
-        transform: translateY(60px)
-    }
 }
 
 .loading-screen {
@@ -82,7 +40,6 @@
 }
 
   </style>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script  type="importmap">{
     "imports": {
       "three": "https://threejs.org/build/three.module.js"
@@ -96,12 +53,6 @@
    import {OrbitControls} from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
    import {OBJLoader} from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js';
    import {MTLLoader} from 'https://threejs.org/examples/jsm/loaders/MTLLoader.js';
-    
-   //scroll icon
-
-setTimeout(function() {
-    $('.icon-scroll').fadeOut('slow');
-}, 9000);
 
   //loading screen
 
@@ -162,14 +113,6 @@ manager.onError = function ( url ) {
 
   /*
 
-  //luz hemisferica
-  {
-    var skyColor = 0xB1E1FF;  // light blue
-    var groundColor = 0xB97A20;  // brownish orange
-    var intensity = 5;
-    var light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
-    scene.add(light);
-  }
     
   //luz vermelha
   {
@@ -318,6 +261,26 @@ objLoader.load('LUPA.obj', function (obj) {
     
   }
 
+  var busto5;
+  {
+    var mtlLoader = new MTLLoader(manager);
+    mtlLoader.load('BUSTO_5.mtl', (mtl) => {
+      mtl.preload();
+      for (var material of Object.values(mtl.materials)) {
+     material.side = THREE.DoubleSide;
+      }
+      var objLoader = new OBJLoader(manager);
+      objLoader.setMaterials(mtl);
+      objLoader.load('BUSTO_5.obj', (mesh5) => {
+        busto5 = mesh5;
+        scene.add(busto5);
+        busto5.rotation.y = -Math.PI/2;
+        busto5.visible = false;
+      });
+    });
+    
+  }
+
   //Rotatividade dos modelos
 
   var state = 0;
@@ -332,6 +295,7 @@ objLoader.load('LUPA.obj', function (obj) {
     busto2.visible = true;
     busto3.visible = false;
     busto4.visible = false;
+    busto5.visible = false;
     scene.background = new THREE.Color(0x3b5998);
     scene.fog.color = new THREE.Color(0x466094);
     light.intensity = 3;
@@ -342,6 +306,7 @@ objLoader.load('LUPA.obj', function (obj) {
     busto2.visible = false;
     busto3.visible = true;
     busto4.visible = false;
+    busto5.visible = false;
     scene.background = new THREE.Color(0xfffc00);
     scene.fog.color = new THREE.Color(0xfffe73);
     scene.fog.near = 20.5;
@@ -354,19 +319,32 @@ objLoader.load('LUPA.obj', function (obj) {
     busto2.visible = false;
     busto3.visible = false;
     busto4.visible = true;
+    busto5.visible = false;
     scene.background = new THREE.Color(0x1da1f2);
     scene.fog.color = new THREE.Color(0x2ca7f2);
     scene.fog.near = 20;
     scene.fog.far = 21.5;
     light.intensity = 2;
 
-  } else if (state >= 4) {
+  } else if (state == 4) {
+    //sonia
+    busto.visible = false;
+    busto2.visible = false;
+    busto3.visible = false;
+    busto4.visible = false;
+    busto5.visible = true;
+    scene.background = new THREE.Color(0xc32aa3);
+    scene.fog.color = new THREE.Color(0xbf4ba7);
+    light.intensity = 2;
+
+  } else if (state >= 5) {
     state = 0;
     //lucas
     busto.visible = true;
     busto2.visible = false;
     busto3.visible = false;
     busto4.visible = false; 
+    busto5.visible = false;
     scene.background = new THREE.Color(0xdb4437);
     scene.fog.color = new THREE.Color(0xd94e43);
     light.intensity = 4;
@@ -444,7 +422,8 @@ function receiveMessage(event) {
    if(busto) busto.rotation.y -= (0.001 * acelx);    
    if(busto2) busto2.rotation.y += (0.001 * acelx);   
    if(busto3) busto3.rotation.y -= (0.001 * acelx);   
-   if(busto4) busto4.rotation.y += (0.001 * acelx);   
+   if(busto4) busto4.rotation.y += (0.001 * acelx);  
+   if(busto5) busto5.rotation.y -= (0.001 * acelx);   
 
     renderer.render(scene, camera);
 
