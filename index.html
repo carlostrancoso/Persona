@@ -15,56 +15,154 @@
         height: 100%;
         display: block;
         background-color: #EDEDED;
+        cursor: grab;
     }
-  </style>
-  <script type="module">
-    import * as THREE from 'https://threejs.org/build/three.module.js';
-    import {OrbitControls} from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
-    import {OBJLoader} from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js';
-    import {MTLLoader} from 'https://threejs.org/examples/jsm/loaders/MTLLoader.js';
-
-
+    #c:active {
+    cursor: grabbing;
+}
+.icon-scroll,
+.icon-scroll:before {
+  position: absolute;
+    left: 50%;
+    top: -50%;
+}
+.icon-scroll {
+  width: 15px;
   
+} 
 
+    .icon-scroll {
+        position: relative;
+    
+}
+.icon-scroll:before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: white;
+    margin-left: -10px;
+    top: 20px;
+    border-radius: 5px;
+    animation-duration: 2.5s;
+    animation-iteration-count: infinite;
+    animation-name: scroll
+}
+@keyframes scroll {
+    0% {
+        opacity: 0;
+    }
+    5% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+  
+    100% {
+        opacity: 0;
+        transform: translateY(60px)
+    }
+}
+
+.loading-screen {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width:100%;
+    height: 100%;
+    background-color: rgba(237,237,237,0.8);
+    display: flex ;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    font-size: small;
+}
+
+  </style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script  type="importmap">{
+    "imports": {
+      "three": "https://threejs.org/build/three.module.js"
+    }
+  }</script><!-- Remove this when import maps will be widely supported -->
+  <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+  <script type="module">
+    
+   //bibliotecas
+   import * as THREE from 'three';
+   import {OrbitControls} from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
+   import {OBJLoader} from 'https://threejs.org/examples/jsm/loaders/OBJLoader.js';
+   import {MTLLoader} from 'https://threejs.org/examples/jsm/loaders/MTLLoader.js';
+    
+   //scroll icon
+
+setTimeout(function() {
+    $('.icon-scroll').fadeOut('slow');
+}, 9000);
+
+  //loading screen
+
+  const manager = new THREE.LoadingManager();
+  const loadingContainer = document.querySelector('.loading-screen')
+
+  manager.onLoad = function ( ) {
+
+  loadingContainer.style.display='none';
+
+};
+
+manager.onError = function ( url ) {
+
+	console.log( 'There was an error loading ' + url );
+
+};
+
+  //janela e motor render
   var canvas = document.querySelector('#c');
   var renderer = new THREE.WebGLRenderer({canvas, alpha:true});
   renderer.setClearColor( 0xEDEDED, 0 );
-
+    
+  //camera
   var fov = 25;
   var aspect = 2;  // the canvas default
   var near = 0.1;
   var far = 50;
   var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.set(0, 10, 20);
-
+    
+  //controlo orbita
   var controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;  
   controls.target.set(0, 2, 0);
   controls.enableZoom = false;
   controls.enablePan = false;
-
+    
+  //cena e fundo 
   const bgcolor = new THREE.Color(0xEDEDED);
   const scene = new THREE.Scene();
   scene.background = bgcolor;
 
-
+  //nevoeiro 
   {
-  scene.fog = new THREE.Fog(bgcolor, 20, 21.5);
+  scene.fog = new THREE.Fog(0xe5e5e5, 20, 21.5);
   }
 
-  
-
+  //luz ambiente
   {
     var skyColor = 0xB1E1FF;  // light blue
     var groundColor = 0xB97A20;  // brownish orange
-    var intensity = 0.4;
+    var intensity = 5;
     var light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
     scene.add(light);
   }
-
+    
+  //luz vermelha
   {
-    //luz vermelha
     var color = 0xE7071B;
     var intensity = 4;
     var light = new THREE.DirectionalLight(color, intensity);
@@ -73,8 +171,9 @@
     scene.add(light.target);
   }
 
-  { 
+   
     //luz azul
+  {
     var color = 0x0000FF;
     var intensity = 3;
     var light = new THREE.DirectionalLight(color, intensity);
@@ -83,8 +182,9 @@
     scene.add(light.target);
   }
 
-  { 
+   
     //luz verde
+  {
     var color = 0x00FF00;
     var intensity = 2;
     var light = new THREE.DirectionalLight(color, intensity);
@@ -96,7 +196,7 @@
   //lupa
 var lupa;
   {
-    var objLoader = new OBJLoader();
+    var objLoader = new OBJLoader(manager);
     var mat = new THREE.MeshPhysicalMaterial({});
 mat.reflectivity = 0
 mat.transmission = 1
@@ -123,43 +223,202 @@ objLoader.load('LUPA.obj', function (obj) {
     });
     }
 
-    //busto
+    //bustos
+
     var busto;
   {
-    var mtlLoader = new MTLLoader();
+    var mtlLoader = new MTLLoader(manager);
     mtlLoader.load('BUSTO.mtl', (mtl) => {
       mtl.preload();
       for (var material of Object.values(mtl.materials)) {
      material.side = THREE.DoubleSide;
       }
-      var objLoader = new OBJLoader();
+      var objLoader = new OBJLoader(manager);
       objLoader.setMaterials(mtl);
       objLoader.load('BUSTO.obj', (mesh) => {
         busto = mesh;
         scene.add(busto);
         busto.rotation.y = Math.PI;
+        busto.visible = true;
       });
     });
     
   }
   
+  var busto2;
+  {
+    var mtlLoader = new MTLLoader(manager);
+    mtlLoader.load('BUSTO_2.mtl', (mtl) => {
+      mtl.preload();
+      for (var material of Object.values(mtl.materials)) {
+     material.side = THREE.DoubleSide;
+      }
+      var objLoader = new OBJLoader(manager);
+      objLoader.setMaterials(mtl);
+      objLoader.load('BUSTO_2.obj', (mesh2) => {
+        busto2 = mesh2;
+        scene.add(busto2);
+        busto2.rotation.y = Math.PI;
+        busto2.visible = false;
+      });
+    });
+    
+  }
 
-  //scroll
+  var busto3;
+  {
+    var mtlLoader = new MTLLoader(manager);
+    mtlLoader.load('BUSTO_3.mtl', (mtl) => {
+      mtl.preload();
+      for (var material of Object.values(mtl.materials)) {
+     material.side = THREE.DoubleSide;
+      }
+      var objLoader = new OBJLoader(manager);
+      objLoader.setMaterials(mtl);
+      objLoader.load('BUSTO_3.obj', (mesh3) => {
+        busto3 = mesh3;
+        scene.add(busto3);
+        busto3.rotation.y = Math.PI/10;
+        busto3.rotation.x = -Math.PI/20;
+        busto3.visible = false;
+      });
+    });
+    
+  }
+
+  var busto4;
+  {
+    var mtlLoader = new MTLLoader(manager);
+    mtlLoader.load('BUSTO_4.mtl', (mtl) => {
+      mtl.preload();
+      for (var material of Object.values(mtl.materials)) {
+     material.side = THREE.DoubleSide;
+      }
+      var objLoader = new OBJLoader(manager);
+      objLoader.setMaterials(mtl);
+      objLoader.load('BUSTO_4.obj', (mesh4) => {
+        busto4 = mesh4;
+        scene.add(busto4);
+        busto4.rotation.y = Math.PI/2;
+        busto4.visible = false;
+      });
+    });
+    
+  }
+
+  //Rotatividade dos modelos
+
+  var state = 0;
+
+  document.addEventListener("mouseup", function(){
+    state++;
+
+    if (state == 0) {
+    busto.visible = true;
+    busto2.visible = false;
+    busto3.visible = false;
+    busto4.visible = false;
+  } else if (state == 1) {
+    busto.visible = false;
+    busto2.visible = true;
+    busto3.visible = false;
+    busto4.visible = false;
+  } else if (state == 2) {
+    busto.visible = false;
+    busto2.visible = false;
+    busto3.visible = true;
+    busto4.visible = false;
+  } else if (state == 3) {
+    busto.visible = false;
+    busto2.visible = false;
+    busto3.visible = false;
+    busto4.visible = true;
+  } else if (state >= 4) {
+    state = 0;
+    busto.visible = true;
+    busto2.visible = false;
+    busto3.visible = false;
+    busto4.visible = false;
+  }
+});
+
+document.addEventListener("touchend", function(){
+    state++;
+
+    if (state == 0) {
+    busto.visible = true;
+    busto2.visible = false;
+    busto3.visible = false;
+    busto4.visible = false;
+  } else if (state == 1) {
+    busto.visible = false;
+    busto2.visible = true;
+    busto3.visible = false;
+    busto4.visible = false;
+  } else if (state == 2) {
+    busto.visible = false;
+    busto2.visible = false;
+    busto3.visible = true;
+    busto4.visible = false;
+  } else if (state == 3) {
+    busto.visible = false;
+    busto2.visible = false;
+    busto3.visible = false;
+    busto4.visible = true;
+  } else if (state >= 4) {
+    state = 0;
+    busto.visible = true;
+    busto2.visible = false;
+    busto3.visible = false;
+    busto4.visible = false;
+  }
+});
+  
+
+  //scroll para desktop
 
   var scrollCount = 0;
 window.addEventListener('mousewheel', function(e){
 
-  if(e.wheelDelta<0 && scrollCount<100){
-    scrollCount+=2;
+  if(e.wheelDelta<0 && scrollCount<50){
+    scrollCount+=1;
   }
 
-  else if(e.wheelDelta>0 && scrollCount>-100){
-    scrollCount-=2;
+  else if(e.wheelDelta>0 && scrollCount>-50){
+    scrollCount-=1;
   }
-
 });
 
-//responsivo
+  
+
+//acelerometro para mobile (não funciona no iframe do Wordpress)
+    
+var acelx = 1;
+var acely = 1;
+
+window.addEventListener('devicemotion', function(e) 
+{
+  if(e.accelerationIncludingGravity.x == 0 || e.accelerationIncludingGravity.x === undefined){
+    acelx = 1;        
+   }
+  
+   else if(e.accelerationIncludingGravity.y == 0 || e.accelerationIncludingGravity.y === undefined){
+    acely = 1;        
+   } else {
+     acelx = e.accelerationIncludingGravity.x;
+      acely = e.accelerationIncludingGravity.y;
+   }
+    
+});
+    
+    window.addEventListener("message", receiveMessage, false);
+function receiveMessage(event) {
+    console.debug(event.data);
+}
+
+
+
+//redimensionamento da janela
 
   function resizeRendererToDisplaySize(renderer) {
     var canvas = renderer.domElement;
@@ -177,10 +436,12 @@ window.addEventListener('mousewheel', function(e){
  function animate() {
     requestAnimationFrame(animate);
     
-    lupa.rotation.y -= (0.001 * scrollCount);
-    busto.rotation.y += 0.002;
+   if(lupa) lupa.rotation.y += (0.001 * (scrollCount + 1) * (acely - 5));
+   if(busto) busto.rotation.y -= (0.001 * acelx);    
+   if(busto2) busto2.rotation.y += (0.001 * acelx);   
+   if(busto3) busto3.rotation.y -= (0.001 * acelx);   
+   if(busto4) busto4.rotation.y += (0.001 * acelx);   
 
-    
     renderer.render(scene, camera);
 
     if (resizeRendererToDisplaySize(renderer)) {
@@ -189,6 +450,10 @@ window.addEventListener('mousewheel', function(e){
       camera.updateProjectionMatrix();
     }
     controls.update();
+
+    console.log(state);
+
+    
     
 };
 
@@ -200,6 +465,10 @@ animate();
 
 <body>
   <canvas id="c"></canvas>
+  <div class="icon-scroll"></div>
+  <div class="loading-screen">
+    <label for="loading-screen">Loading...</label>
+  </div>
 </body>
 
 </html>
