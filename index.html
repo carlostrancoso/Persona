@@ -274,7 +274,7 @@ objLoader.load('LUPA.obj', function (obj) {
       objLoader.load('BUSTO_5.obj', (mesh5) => {
         busto5 = mesh5;
         scene.add(busto5);
-        busto5.rotation.y = -Math.PI/2;
+        busto5.rotation.y = Math.PI/2;
         busto5.visible = false;
       });
     });
@@ -420,9 +420,9 @@ function receiveMessage(event) {
     
    if(lupa) lupa.rotation.y += (0.001 * (scrollCount + 1) * (acely - 5));
    if(busto) busto.rotation.y -= (0.001 * acelx);    
-   if(busto2) busto2.rotation.y += (0.001 * acelx);   
+   if(busto2) busto2.rotation.y -= (0.001 * acelx);   
    if(busto3) busto3.rotation.y -= (0.001 * acelx);   
-   if(busto4) busto4.rotation.y += (0.001 * acelx);  
+   if(busto4) busto4.rotation.y -= (0.001 * acelx);  
    if(busto5) busto5.rotation.y -= (0.001 * acelx);   
 
     renderer.render(scene, camera);
