@@ -146,10 +146,12 @@ manager.onError = function ( url ) {
     scene.add(light);
     scene.add(light.target);
   }
+  
   */
 
   //lupa
-var lupa;
+
+	  /*var lupa;
   {
     var objLoader = new OBJLoader(manager);
     var mat = new THREE.MeshPhysicalMaterial({});
@@ -177,7 +179,7 @@ objLoader.load('LUPA.obj', function (obj) {
       lupa.rotation.y = Math.PI;
     });
     }
-
+*/
     //bustos
 
     var busto;
@@ -418,7 +420,7 @@ function receiveMessage(event) {
  function animate() {
     requestAnimationFrame(animate);
     
-   if(lupa) lupa.rotation.y += (0.001 * (scrollCount + 1) * (acely - 5));
+  // if(lupa) lupa.rotation.y += (0.001 * (scrollCount + 1) * (acely - 5));
    if(busto) busto.rotation.y -= (0.001 * acelx);    
    if(busto2) busto2.rotation.y -= (0.001 * acelx);   
    if(busto3) busto3.rotation.y -= (0.001 * acelx);   
