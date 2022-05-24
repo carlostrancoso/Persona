@@ -5,41 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Persona</title>
-  <style>
-    html, body {
-        margin: 0;
-        height: 100%;
-    }
-    #c {
-        width: 100%;
-        height: 100%;
-        display: block;
-        cursor: grab;
-    }
-    #c:active {
-    cursor: grabbing;
-
-}
-
-.loading-screen {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%,-50%);
-    width:100%;
-    height: 100%;
-    background-color: rgba(237,237,237,0.8);
-    display: flex ;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: black;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: normal;
-    font-size: small;
-}
-
-  </style>
+  <link type="text/css" rel="stylesheet" href="./main.css">
   <script  type="importmap">{
     "imports": {
       "three": "https://threejs.org/build/three.module.js"
@@ -58,10 +24,11 @@
 
   const manager = new THREE.LoadingManager();
   const loadingContainer = document.querySelector('.loading-screen')
-
+  
   manager.onLoad = function ( ) {
 
   loadingContainer.style.display='none';
+  
 
 };
 
@@ -83,12 +50,14 @@ manager.onError = function ( url ) {
   var far = 50;
   var camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.set(0, 10, 20);
+
+
     
   //controlo orbita
   var controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;  
-  controls.target.set(0, 2, 0);
+  controls.target.set(0, 1, 0);
   controls.enableZoom = false;
   controls.enablePan = false;
     
@@ -300,7 +269,7 @@ objLoader.load('LUPA.obj', function (obj) {
     busto5.visible = false;
     scene.background = new THREE.Color(0x3b5998);
     scene.fog.color = new THREE.Color(0x466094);
-    light.intensity = 3;
+    light.intensity = 3.5;
 
   } else if (state == 2) {
     //gustavo
@@ -355,25 +324,9 @@ objLoader.load('LUPA.obj', function (obj) {
 
 // formas de interacao
 
-window.addEventListener('mouseup', rotatividade, false);
-window.addEventListener('touchend', rotatividade, false);
+document.querySelector('#c').addEventListener('mouseup', rotatividade, false);
+document.querySelector('#c').addEventListener('touchend', rotatividade, false);
 
-
-  //scroll para desktop
-
-  var scrollCount = 0;
-window.addEventListener('mousewheel', function(e){
-
-  if(e.wheelDelta<0 && scrollCount<50){
-    scrollCount+=1;
-  }
-
-  else if(e.wheelDelta>0 && scrollCount>-50){
-    scrollCount-=1;
-  }
-});
-
-  
 
 //acelerometro para mobile (não funciona no iframe do Wordpress)
     
@@ -382,11 +335,11 @@ var acely = 1;
 
 window.addEventListener('devicemotion', function(e) 
 {
-  if(e.accelerationIncludingGravity.x == 0 || e.accelerationIncludingGravity.x === undefined){
+  if(e.accelerationIncludingGravity.x == 0 || e.accelerationIncludingGravity.x === undefined || e.accelerationIncludingGravity.x == null){
     acelx = 1;        
    }
   
-   else if(e.accelerationIncludingGravity.y == 0 || e.accelerationIncludingGravity.y === undefined){
+   else if(e.accelerationIncludingGravity.y == 0 || e.accelerationIncludingGravity.y == undefined || e.accelerationIncludingGravity.y == null){
     acely = 1;        
    } else {
      acelx = e.accelerationIncludingGravity.x;
@@ -449,10 +402,25 @@ animate();
 </head>
 
 <body>
+
+  <div class="info">
+    <div class="message"><h3>Persona</h3><br>Pode interagir tocando e arrastando a tela</div>
+    <br />
+    <button class="ok" onclick="this.parentElement.style.display='none';">OK</button>
+</div>
+
+
+<div class="topnav">
+  <a href="https://carlostrancoso.github.io/Nuvem/">Anterior</a>
+  <div class="topnav-right">
+    <a href="https://carlostrancoso.github.io/Audio/">Próximo</a>
+  </div>
+
+</div>
+
   <canvas id="c"></canvas>
-  <div class="icon-scroll"></div>
   <div class="loading-screen">
-    <label for="loading-screen">Loading...</label>
+    <label for="loading-screen">A carregar...</label>
   </div>
 </body>
 
