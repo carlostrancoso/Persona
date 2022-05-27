@@ -18,19 +18,26 @@ cursor: grabbing;
 }
 
 .info {
-        display: fixed;
-        background-color: #333;
-        color: #ffffff;
-        position: fixed;
-        width: 250px;
-        height: 185px;
-        left: 45%;
-        top:45%;
-        margin-left: -100px;
-        padding: 15px 20px 10px;
-        box-sizing: border-box;
-        text-align: center;
-    }
+	display: fixed;
+	background-color: #333;
+	color: #ffffff;
+	position: fixed;
+	width: 250px;
+	height: 225px;
+	left: 0;
+	right: 0;
+	top:0;
+	bottom: 0;
+	margin: auto;
+	padding: 15px 20px 10px;
+	box-sizing: border-box;
+	text-align: center;
+	  /*Solves a problem in which the content is being cut when the div is smaller than its' wrapper:*/
+	  max-width: 100%;
+	  max-height: 100%;
+	  overflow: auto;
+
+}
 
         .info-button {
             background-color: #FFFFFF;
